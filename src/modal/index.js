@@ -162,6 +162,13 @@ async function openAppManifestModal(data) {
   let formItems = [
     {
       type: "input",
+      name: "name",
+      label: "应用名称",
+      placeholder: "请输入应用名称",
+      value: "",
+    },
+    {
+      type: "input",
       name: "privacyAgreement",
       label: "隐私协议",
       value: "https://091801.zhonglunnet.com/clause/index.html?title=隐私政策",
@@ -529,8 +536,8 @@ async function showFormDialog(data) {
         {
           type: "input",
           name: "appName",
-          label: "应用名称",
-          placeholder: "请输入应用名称",
+          label: "OEM名称",
+          placeholder: "请输入OEM名称",
           value: "",
           required: true,
         },
@@ -724,6 +731,9 @@ async function showFormDialog(data) {
           this.updateForm(form.setFormValue(data));
         },
         async onSetManifest() {
+          if (!manifest.name) {
+            manifest.name = data.appName;
+          }
           manifest = await openAppManifestModal(manifest);
           Object.assign(data, { manifest });
         },

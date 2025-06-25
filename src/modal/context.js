@@ -120,7 +120,7 @@ function getManifest(config) {
   };
 
   return {
-    name: config.appName,
+    name: manifest.name || config.appName,
     appid: config.appid,
     versionName: "",
     versionCode: "",
@@ -294,6 +294,7 @@ function transOEMConfigToForm(
     androidPackageName: packageName.androidPackageName,
     iosBundle: packageName.iosBundle,
     manifest: {
+      name: manifest.name,
       nativePlugins: manifest["app-plus"].nativePlugins ?? {},
       privacyAgreement:
         links.find((item) => item.title === "隐私政策")?.href ?? "",
