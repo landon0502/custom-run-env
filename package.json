@@ -1,0 +1,140 @@
+{
+  "id": "customrunenv-tool",
+  "name": "customrunenv",
+  "description": "自定义运行环境",
+  "displayName": "Custom Run Env",
+  "version": "0.12.20",
+  "publisher": "wanghuan",
+  "engines": {
+    "HBuilderX": "^2.7.0",
+    "vscode": "^1.85.2"
+  },
+  "categories": [
+    "Other"
+  ],
+  "homepage": "",
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onCommand:customrunenv.stopWatch",
+    "onCommand:customrunenv.envWatch",
+    "onCommand:customrunenv.genEnvConfig",
+    "onCommand:customrunenv.openConfigModal"
+  ],
+  "repository": {},
+  "contributes": {
+    "configuration": {
+      "title": "customrunenv",
+      "type": "object",
+      "properties": {
+        "customrunenv.runEnvDir": {
+          "type": "string",
+          "default": "./.run_env",
+          "description": "指定插件加载目录"
+        },
+        "customrunenv.oemJsonOutputFilename": {
+          "type": "string",
+          "default": "oem-config",
+          "description": "指定oem JSON配置输出文件名"
+        },
+        "customrunenv.HBuilderXCliName": {
+          "type": "string",
+          "default": "cli",
+          "description": "指定hbuilder cli名，默认cli"
+        },
+        "customrunenv.appUsefulNativePlugins": {
+          "type": "string",
+          "default": "{\"MyUniPlugin\":{\"__plugin_info__\":{\"name\":\"ZLUniPlugin\",\"description\":\"蓝牙打印模块，新增适配新国都,新增标签适配\",\"platforms\":\"Android,iOS\",\"url\":\"\",\"android_package_name\":\"\",\"ios_bundle_id\":\"\",\"isCloud\":false,\"bought\":-1,\"pid\":\"\",\"parameters\":{}}},\"ShanDePay\":{\"__plugin_info__\":{\"name\":\"ShanDePay-UniPlugin\",\"description\":\"电商间联-杉德支付原生插件，该插件目前仅在联迪A8机器测试通过\",\"platforms\":\"Android\",\"url\":\"\",\"android_package_name\":\"\",\"ios_bundle_id\":\"\",\"isCloud\":false,\"bought\":-1,\"pid\":\"\",\"parameters\":{}}},\"ZLPort\":{\"__plugin_info__\":{\"name\":\"ZLPort-UniPlugin\",\"description\":\"串口打印机\",\"platforms\":\"Android\",\"url\":\"\",\"android_package_name\":\"\",\"ios_bundle_id\":\"\",\"isCloud\":false,\"bought\":-1,\"pid\":\"\",\"parameters\":{}}},\"ZLSocket\":{\"__plugin_info__\":{\"name\":\"ZLSocket-UniPlugin\",\"description\":\"条码秤对接插件\",\"platforms\":\"Android\",\"url\":\"\",\"android_package_name\":\"\",\"ios_bundle_id\":\"\",\"isCloud\":false,\"bought\":-1,\"pid\":\"\",\"parameters\":{}}},\"Aliyun-Push\":{\"阿里云移动推送Android AppKey\":\"\",\"阿里云移动推送Android AppSecret\":\"\",\"阿里云移动推送iOS AppKey\":\"\",\"阿里云移动推送iOS AppSecret\":\"\",\"__plugin_info__\":{\"name\":\"阿里云移动推送\",\"description\":\"移动推送（Mobile Push）是提供给移动开发者的移动端消息推送服务，通过在App中集成推送功能，进行高效、精准、实时的消息推送，从而使业务及时触达用户，提高用户粘性。\",\"platforms\":\"Android,iOS\",\"url\":\"https://ext.dcloud.net.cn/plugin?id=7628\",\"android_package_name\":\"\",\"ios_bundle_id\":\"\",\"isCloud\":true,\"bought\":1,\"pid\":\"7628\",\"parameters\":{\"阿里云移动推送Android AppKey\":{\"des\":\"阿里云EMAS移动应用标识\",\"key\":\"\",\"value\":\"\"},\"阿里云移动推送Android AppSecret\":{\"des\":\"阿里云EMAS移动应用密钥\",\"key\":\"\",\"value\":\"\"},\"阿里云移动推送iOS AppKey\":{\"des\":\"阿里云EMAS移动应用标识\",\"key\":\"aliyun:push:appKey\",\"value\":\"\"},\"阿里云移动推送iOS AppSecret\":{\"des\":\"阿里云EMAS移动应用密钥\",\"key\":\"aliyun:push:appSecret\",\"value\":\"\"}}}},\"DothanTech-LPAPI\":{\"__plugin_info__\":{\"name\":\"德佟系列打印机接口插件\",\"description\":\"用于调用德佟系列标签打印机接口，进行打印操作\",\"platforms\":\"Android,iOS\",\"url\":\"https://ext.dcloud.net.cn/plugin?id=1901\",\"android_package_name\":\"\",\"ios_bundle_id\":\"\",\"isCloud\":true,\"bought\":1,\"pid\":\"1901\",\"parameters\":{}}},\"Netease-QiyuModule\":{\"appKey\":\"\",\"__plugin_info__\":{\"name\":\"网易七鱼\",\"description\":\"网易七鱼APP原生插件，封装七鱼sdk功能供开发者使用\",\"platforms\":\"Android,iOS\",\"url\":\"https://ext.dcloud.net.cn/plugin?id=9262\",\"android_package_name\":\"uni.UNIZLYXL\",\"ios_bundle_id\":\"com.yxlapp.zhonglun\",\"isCloud\":true,\"bought\":1,\"pid\":\"9262\",\"parameters\":{\"appKey\":{\"des\":\"七鱼appKey\",\"key\":\"Netease-QiyuModule_appKey\",\"value\":\"\"}}}},\"wss-scan\":{\"__plugin_info__\":{\"name\":\"华为ScanKit统一扫码插件，支持连续扫描模式，安卓-IOS双端\",\"description\":\"基于华为HMS ScanKit的统一扫码插件，支持连续和多码扫描模式，支持component组件模式，支持Base64图片识别模式\",\"platforms\":\"Android,iOS\",\"url\":\"https://ext.dcloud.net.cn/plugin?id=2683\",\"android_package_name\":\"uni.UNIZLYXL\",\"ios_bundle_id\":\"com.yxlapp.zhonglun\",\"isCloud\":true,\"bought\":1,\"pid\":\"2683\",\"parameters\":{}}}}",
+          "description": "配置可选择的原生插件(JSON)"
+        },
+        "customrunenv.oemAssetsImageDir": {
+          "type": "string",
+          "description": "图片资源目录，相对于”加载目录customrunenv.runEnvDir“设置",
+          "default": "./assets"
+        }
+      }
+    },
+    "viewsContainers": {},
+    "views": {},
+    "commands": [
+      {
+        "command": "customrunenv.stopWatch",
+        "title": "停止监听"
+      },
+      {
+        "command": "customrunenv.envWatch",
+        "title": "启动监听"
+      },
+      {
+        "command": "customrunenv.genEnvConfig",
+        "title": "生成配置文件"
+      },
+      {
+        "command": "customrunenv.openConfigModal",
+        "title": "新建"
+      },
+      {
+        "command": "customrunenv.editOemConfig",
+        "title": "编辑"
+      },
+      {
+        "command": "customrunenv.saveCurrentOEM",
+        "title": "保存当前OEM"
+      }
+    ],
+    "clicommands": [],
+    "menus": {
+      "editor/context": [],
+      "menubar/run": [],
+      "explorer/context": [
+        {
+          "id": "customrunenv",
+          "title": "OEM",
+          "group": "openInExplorer"
+        },
+        {
+          "command": "customrunenv.openConfigModal",
+          "group": "customrunenv@3"
+        },
+        {
+          "command": "customrunenv.editOemConfig",
+          "group": "customrunenv@3"
+        },
+        {
+          "command": "customrunenv.genEnvConfig",
+          "group": "customrunenv@2"
+        },
+        {
+          "command": "customrunenv.envWatch",
+          "group": "customrunenv@1"
+        },
+        {
+          "command": "customrunenv.saveCurrentOEM",
+          "group": "customrunenv@1"
+        }
+      ]
+    }
+  },
+  "extensionDependencies": [],
+  "dependencies": {
+    "cheerio": "^1.1.0",
+    "chokidar": "^4.0.3",
+    "jimp": "^1.6.0",
+    "json-format": "^1.0.1",
+    "json5": "^2.2.3",
+    "lodash": "^4.17.21",
+    "pinyin": "^4.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "vscode:prepublish": "npm run build",
+    "prepack": "npm run build",
+    "build": "node esbuild.js --production",
+    "watch:esbuild": "node esbuild.js --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}
