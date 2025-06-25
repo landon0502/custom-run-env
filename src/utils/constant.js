@@ -36,7 +36,7 @@ const shopTypes = [
     id: 1,
     name: "零售",
     introduce: "提供商超、服务、母婴、美业等通用解决方案",
-    img: "/static/images/login/industry-isy-1.png",
+    img: "/static/images/login/industry-1.png",
   },
   {
     id: 2,
