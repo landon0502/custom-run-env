@@ -24,10 +24,10 @@ class Logger {
     let msg = `[${type}]:${message}`;
     await this.appendLoggerLine(msg);
   };
-  info = (msg) => this.logByType(msg, "INFO");
-  error = (msg) => this.logByType(msg, "ERROR");
-  success = (msg) => this.logByType(msg, "SUCCESS");
-  warning = (msg) => this.logByType(msg, "WARNING");
+  info = (msg) => this.logByType(msg, "📝INFO");
+  error = (msg) => this.logByType(msg, "❌ERROR");
+  success = (msg) => this.logByType(msg, "✅SUCCESS");
+  warning = (msg) => this.logByType(msg, "⚠️WARNING");
 }
 module.exports = new Logger({
   loggerId: "env-config-logger",

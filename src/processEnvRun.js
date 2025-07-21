@@ -797,6 +797,29 @@ class ProcessEnvRun extends WatchFile {
       this.resetState();
     }
   }
+  async initOemEnv(params) {
+    try {
+      await this.initWorkspace(params);
+      let runEnvDir = this.runEnvDir;
+      await ensureDirectoryExists(runEnvDir);
+      logger.success("OEM配置目录创建成功");
+      try {
+        let result = await hx.window.showMessageBox({
+          type: "info",
+          title: "提示",
+          text: "是否保存当前配置？",
+          buttons: ["确定", "取消"],
+        });
+        if (result === "确定") {
+          await this.saveCurrentOEM(params);
+        }
+      } catch (error) {
+        logger.error(error);
+      }
+    } catch (error) {
+      this.tryCatchError("初始化失败!");
+    }
+  }
   /********************** 配置窗口 end ************************/
 
   /********************** 保存当前环境 ************************/
@@ -827,7 +850,7 @@ class ProcessEnvRun extends WatchFile {
         config.oem = oemConfig;
         this.envName = oemConfig.appName;
       } else {
-        throw new Error("未找到OEM配置");
+        throw new Error("未找到OEM配置!");
       }
       if (fsExistSync(manifestPath)) {
         let manifest = await readJsonValue(manifestPath);

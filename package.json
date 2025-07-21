@@ -3,7 +3,7 @@
   "name": "customrunenv",
   "description": "自定义运行环境",
   "displayName": "Custom Run Env",
-  "version": "0.12.24",
+  "version": "0.12.25",
   "publisher": "wanghuan",
   "engines": {
     "HBuilderX": "^2.7.0",
@@ -18,7 +18,10 @@
     "onCommand:customrunenv.stopWatch",
     "onCommand:customrunenv.envWatch",
     "onCommand:customrunenv.genEnvConfig",
-    "onCommand:customrunenv.openConfigModal"
+    "onCommand:customrunenv.openConfigModal",
+    "onCommand:customrunenv.initenv",
+    "onCommand:customrunenv.saveCurrentOEM",
+    "onCommand:customrunenv.editOemConfig"
   ],
   "repository": {},
   "contributes": {
@@ -79,6 +82,10 @@
       {
         "command": "customrunenv.saveCurrentOEM",
         "title": "保存当前OEM"
+      },
+      {
+        "command": "customrunenv.initenv",
+        "title": "初始化配置目录"
       }
     ],
     "clicommands": [],
@@ -109,6 +116,10 @@
         },
         {
           "command": "customrunenv.saveCurrentOEM",
+          "group": "customrunenv@1"
+        },
+        {
+          "command": "customrunenv.initenv",
           "group": "customrunenv@1"
         }
       ]

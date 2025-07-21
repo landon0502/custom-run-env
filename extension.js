@@ -8,7 +8,6 @@ function activate(context) {
   // 激活了
 
   const ctx = new ProcessEnvRun();
-  info("插件激活了" + platform.platform);
   context.subscriptions.push(
     platform.commands.registerCommand("customrunenv.envWatch", (params) => {
       ctx.parse(params, { isWatchFile: true });
@@ -52,6 +51,12 @@ function activate(context) {
         ctx.saveCurrentOEM(params);
       }
     )
+  );
+
+  context.subscriptions.push(
+    platform.commands.registerCommand("customrunenv.initenv", (params) => {
+      ctx.initOemEnv(params);
+    })
   );
 
   // cli
