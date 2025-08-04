@@ -151,12 +151,15 @@ class FormDialog {
       ..._self.ui,
       formItems: _self.formItems,
       validate: validate,
-      async onChanged(field, { allWidget, changedWidget }) {
-        if (isObject(changedWidget) && isEvent(changedWidget.name)) {
-          let event = getEventName(changedWidget.name);
-          await buttonEvents?.[event]?.call?.(this, field, changedWidget);
+      async onChanged(field, config) {
+        if (isObject(config)) {
+          const { allWidget, changedWidget } = config;
+          if (isObject(changedWidget) && isEvent(changedWidget.name)) {
+            let event = getEventName(changedWidget.name);
+            await buttonEvents?.[event]?.call?.(this, field, changedWidget);
+          }
         }
-        onChanged(field, { allWidget, changedWidget });
+        onChanged(field, config);
       },
       onOpened,
     });

@@ -79,7 +79,11 @@ async function manifestInfoModal(manifest) {
 /**
  * 选择商铺类型
  */
-async function openShopTypeSelectModal(data) {
+async function openShopTypeSelectModal(data, isOem) {
+  let renderShopTypes = cloneDeep(shopTypes).map((item) => ({
+    ...item,
+    name: isOem && item.id === 6 ? "餐饮" : item.name,
+  }));
   let typeMap = {
     0: 1,
     1: 2,
@@ -98,7 +102,7 @@ async function openShopTypeSelectModal(data) {
         title: "OEM支持的店铺类型",
         name: "shopTypes",
         columnStretches: [1],
-        items: shopTypes.map((item) => ({
+        items: renderShopTypes.map((item) => ({
           columns: [{ label: item.name, value: item.id }],
         })),
         value: [],
@@ -106,7 +110,7 @@ async function openShopTypeSelectModal(data) {
         searchable: true,
         searchColumns: [0],
         setValue(shopTypeSelected) {
-          return shopTypes.reduce((acc, current, index) => {
+          return renderShopTypes.reduce((acc, current, index) => {
             if (shopTypeSelected?.some?.((item) => item.id === current.id)) {
               return [...acc, index];
             }
@@ -116,12 +120,12 @@ async function openShopTypeSelectModal(data) {
         getValue(selectedIndexs) {
           return (
             selectedIndexs?.map?.((index) =>
-              shopTypes.find((item) => item.id === typeMap[index])
+              renderShopTypes.find((item) => item.id === typeMap[index])
             ) ?? []
           );
         },
       },
-      ...shopTypes.map((item) => ({
+      ...renderShopTypes.map((item) => ({
         type: "fileSelectInput",
         label: item.name + "商铺选择LOGO",
         name: `${prefix}${split}${item.id}`,
@@ -530,6 +534,7 @@ async function showFormDialog(data) {
     data = cloneDeep(data) ?? {};
     let manifest = data?.manifest ?? {};
     let buildPackage = data?.buildPackage ?? {};
+    let isOem = "true";
     const form = new FormDialog({
       title: "OEM配置",
       formItems: [
@@ -636,7 +641,7 @@ async function showFormDialog(data) {
             { label: "是", id: "true" },
             { label: "否", id: "false" },
           ],
-          value: "true",
+          value: isOem,
         },
         {
           type: "radioGroup",
@@ -723,10 +728,18 @@ async function showFormDialog(data) {
       cancelButtonText: "取消(&C)",
     });
     const formData = await form.open(data, {
-      onChanged: async function (field, { allWidget, changedWidget }) {},
+      onChanged: async function (field, config) {
+        console.log(config);
+        if (typeof config === "string" && field === "isOem") {
+          isOem = config;
+        }
+      },
       buttonEvents: {
         async onSetShopType() {
-          let shopTypesConfig = await openShopTypeSelectModal(data);
+          let shopTypesConfig = await openShopTypeSelectModal(
+            data,
+            isOem === "true"
+          );
           Object.assign(data, shopTypesConfig);
           this.updateForm(form.setFormValue(data));
         },
