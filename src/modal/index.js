@@ -730,7 +730,7 @@ async function showFormDialog(data) {
     const formData = await form.open(data, {
       onChanged: async function (field, config) {
         console.log(config);
-        if (typeof config === "string" && field === "isOem") {
+        if (typeof config === "string" && field === "isOEM") {
           isOem = config;
         }
       },
