@@ -1,6 +1,6 @@
 const { fillPath, parsePathFileName } = require("../utils/file");
 const { getHxConfig } = require("../utils/editor.js");
-const { isEmpty } = require("lodash");
+const { isEmpty, toString } = require("lodash");
 const cheerio = require("cheerio");
 /**
  * 生成事件key
@@ -282,8 +282,8 @@ function transOEMConfigToForm(
     serverPhone: oem.serverPhone,
     isZhonglun: oem.isZhonglun,
     loginTheme: oem.loginTheme,
-    isNeutral: oem.isNeutral.toString(),
-    isOEM: oem.isOEM.toString(),
+    isNeutral: toString(oem.isNeutral),
+    isOEM: toString(oem.isOEM),
     appName: oem.appName,
     oemcode: oem.oemcode,
     upgrade: oem.upgrade,

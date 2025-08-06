@@ -26,6 +26,7 @@ const {
   isObject,
   cloneDeep,
   pick,
+  toString,
 } = require("lodash");
 const {
   getHxConfig,
@@ -262,7 +263,7 @@ class ProcessEnvRun extends WatchFile {
       logger.success("已生成应用页面配置✅");
       if (script) logger.info("在命令行中执行该命令：" + script);
     } catch (error) {
-      this.tryCatchError(error.toString());
+      this.tryCatchError(toString(error));
     }
   };
 
@@ -343,7 +344,7 @@ class ProcessEnvRun extends WatchFile {
         androidPackageName: config.android.packagename,
       };
     } catch (error) {
-      this.tryCatchError(error.toString());
+      this.tryCatchError(toString(error));
       return {};
     }
   }
@@ -481,7 +482,7 @@ class ProcessEnvRun extends WatchFile {
         }
       }
     } catch (err) {
-      hx.window.showErrorMessage(err?.toString?.() ?? err);
+      hx.window.showErrorMessage(toString(err));
       return Promise.reject(err);
     }
   };
@@ -645,7 +646,7 @@ class ProcessEnvRun extends WatchFile {
       }
       logger.success(`操作成功：OEM${res.appName}`);
     } catch (error) {
-      return Promise.reject(error.toString());
+      return Promise.reject(toString(error));
     }
   }
   getPrefixName = (name) => {
@@ -767,7 +768,7 @@ class ProcessEnvRun extends WatchFile {
       await this.openConfigModal(void 0, false);
       hx.window.showInformationMessage("OEM配置已生成");
     } catch (error) {
-      this.tryCatchError(error.toString());
+      this.tryCatchError(toString(error));
     }
   }
   async editOemConfig(params) {
@@ -792,7 +793,7 @@ class ProcessEnvRun extends WatchFile {
       await this.openConfigModal(formData, true);
       hx.window.showInformationMessage("OEM配置已更新");
     } catch (error) {
-      this.tryCatchError(error.toString());
+      this.tryCatchError(toString(error));
     } finally {
       this.resetState();
     }
@@ -895,7 +896,7 @@ class ProcessEnvRun extends WatchFile {
       const formData = transOEMConfigToForm(config, void 0, void 0, true);
       await this.openConfigModal(formData, false);
     } catch (error) {
-      this.tryCatchError(error.toString());
+      this.tryCatchError(toString(error));
     }
   }
   /********************** 保存当前环境 end ************************/

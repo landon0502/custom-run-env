@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const JSON5 = require("json5");
 const { isUndef } = require("./is");
+const { toString } = require("lodash");
 const readFile = fs.promises.readFile;
 /**
  * 补全路径
@@ -68,7 +69,7 @@ async function writeFile(path, content) {
 
 async function readJsonValue(jsonPath) {
   let res = await readFile(jsonPath);
-  let jsonValue = JSON5.parse(res.toString());
+  let jsonValue = JSON5.parse(toString(res));
   return jsonValue;
 }
 
