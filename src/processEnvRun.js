@@ -227,6 +227,16 @@ class ProcessEnvRun extends WatchFile {
     //     : "none";
     // }
     await writeFile(this.manifestJsonOutputPath, parseJsonc(manifestJson));
+    logger.info(
+      [
+        "android package name:" + oem_plugin_info.android_package_name ??
+          androidPackageName ??
+          "无",
+        "ios package name:" + oem_plugin_info.ios_bundle_id ??
+          iosBundle ??
+          "无",
+      ].join(",")
+    );
   }
 
   /**
@@ -340,8 +350,8 @@ class ProcessEnvRun extends WatchFile {
       )} pack --host HBuilderX --config ${configPath}`;
       return {
         script,
-        iosBundle: config.ios.bundle,
-        androidPackageName: config.android.packagename,
+        iosBundle: config?.ios?.bundle ?? "",
+        androidPackageName: config?.android?.packagename ?? "",
       };
     } catch (error) {
       this.tryCatchError(toString(error));

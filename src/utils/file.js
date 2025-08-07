@@ -54,12 +54,42 @@ async function fsRemove(path) {
   });
 }
 
-async function copy(from, to, overwrite) {
-  // let isExist = await fsExist(to);
-  // if (overwrite && isExist) {
-  //   await fsRemove(to);
-  // }
-  await fs.promises.copyFile(from, to);
+async function copy(source, destination, overwrite) {
+  const srcPath = path.resolve(source);
+  const destPath = path.resolve(destination);
+  let isExist = await fsExist(destination);
+  console.log(srcPath, destPath, srcPath !== destPath);
+  if (overwrite && isExist && srcPath !== destPath) {
+    await fsRemove(destination);
+  }
+  await fs.promises.copyFile(srcPath, destPath);
+}
+
+function copyFileWithCaseCheck(source, target) {
+  return new Promise((resolve, reject) => {
+    // 检查源文件是否存在（精确匹配）
+    fs.readdir(path.dirname(source), (err, files) => {
+      if (err) return reject(err);
+
+      const sourceBase = path.basename(source);
+      const exactMatch = files.includes(sourceBase);
+
+      if (!exactMatch) {
+        return reject(
+          new Error(`Source file not found with exact case: ${source}`)
+        );
+      }
+      // 执行复制
+      const readStream = fs.createReadStream(source);
+      const writeStream = fs.createWriteStream(target);
+
+      readStream.on("error", reject);
+      writeStream.on("error", reject);
+      writeStream.on("finish", resolve);
+
+      readStream.pipe(writeStream);
+    });
+  });
 }
 
 async function writeFile(path, content) {
@@ -142,4 +172,5 @@ module.exports = {
   parsePathFileName,
   fsExistSync,
   isParentPath,
+  copyFileWithCaseCheck,
 };
