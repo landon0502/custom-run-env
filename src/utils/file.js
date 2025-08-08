@@ -58,11 +58,10 @@ async function copy(source, destination, overwrite) {
   const srcPath = path.resolve(source);
   const destPath = path.resolve(destination);
   let isExist = await fsExist(destination);
-  console.log(srcPath, destPath, srcPath !== destPath);
-  if (overwrite && isExist && srcPath !== destPath) {
-    await fsRemove(destination);
-  }
   await fs.promises.copyFile(srcPath, destPath);
+  if (overwrite && isExist && srcPath !== destPath) {
+    await fs.promises.rename(srcPath, destPath);
+  }
 }
 
 function copyFileWithCaseCheck(source, target) {

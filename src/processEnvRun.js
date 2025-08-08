@@ -186,6 +186,9 @@ class ProcessEnvRun extends WatchFile {
         if (key === "nativePlugins") {
           return srcValue;
         }
+        if (key === "privacy") {
+          return srcValue;
+        }
         if (isArray(objValue) && isArray(srcValue)) {
           return [...objValue, ...srcValue].reduce((acc, current) => {
             if (!acc.some((item) => isEqual(item, current))) {
@@ -197,6 +200,7 @@ class ProcessEnvRun extends WatchFile {
       }
     );
     let oemManifestNativePlugins = manifest["app-plus"]?.nativePlugins ?? {};
+    let oemPlugin = {};
     // 重写包名
     let nativePlugins = manifestJson["app-plus"]?.nativePlugins;
     if (isPlainObject(nativePlugins)) {
@@ -204,6 +208,7 @@ class ProcessEnvRun extends WatchFile {
         let plugin_info = config.__plugin_info__;
         let oem_plugin_info =
           oemManifestNativePlugins[key]?.__plugin_info__ ?? {};
+        oemPlugin = oem_plugin_info;
         // 离线包名好像不需要这个配置？？
         if (isPlainObject(plugin_info)) {
           if (
@@ -227,14 +232,23 @@ class ProcessEnvRun extends WatchFile {
     //     : "none";
     // }
     await writeFile(this.manifestJsonOutputPath, parseJsonc(manifestJson));
+    let androidPrivacyPath = fillPath(
+      this.projectRootDir,
+      "androidPrivacy.json"
+    );
+    let isExistAndroidPrivacy = fsExistSync(androidPrivacyPath);
+    if (isExistAndroidPrivacy) {
+      let privacyJson = await readJsonValue(androidPrivacyPath);
+      privacyJson.prompt =
+        manifestJson?.["app-plus"]?.privacy?.prompt ?? "none";
+      await writeFile(androidPrivacyPath, parseJsonc(privacyJson));
+    }
     logger.info(
       [
-        "android package name:" + oem_plugin_info.android_package_name ??
+        "android package name:" + oemPlugin.android_package_name ??
           androidPackageName ??
           "无",
-        "ios package name:" + oem_plugin_info.ios_bundle_id ??
-          iosBundle ??
-          "无",
+        "ios package name:" + oemPlugin.ios_bundle_id ?? iosBundle ?? "无",
       ].join(",")
     );
   }
@@ -620,9 +634,9 @@ class ProcessEnvRun extends WatchFile {
    * @param {boolean} removeOldOem 是否删除旧的oem
    * @returns
    */
-  async openConfigModal(config, removeOldOem = false) {
+  async openConfigModal(config, removeOldOem = false, action) {
     try {
-      let res = await showFormDialog(config);
+      let res = await showFormDialog(config, action);
       let oem = getOEM(res);
       const manifest = getManifest(res);
       let oemDir = fillPath(this.runEnvDir, `./${res.appName}`);
@@ -775,7 +789,7 @@ class ProcessEnvRun extends WatchFile {
 
   async addOem() {
     try {
-      await this.openConfigModal(void 0, false);
+      await this.openConfigModal(void 0, false, "add");
       hx.window.showInformationMessage("OEM配置已生成");
     } catch (error) {
       this.tryCatchError(toString(error));
@@ -800,7 +814,7 @@ class ProcessEnvRun extends WatchFile {
         selectPath,
         this.assetsImageDir
       );
-      await this.openConfigModal(formData, true);
+      await this.openConfigModal(formData, true, "update");
       hx.window.showInformationMessage("OEM配置已更新");
     } catch (error) {
       this.tryCatchError(toString(error));
@@ -904,7 +918,7 @@ class ProcessEnvRun extends WatchFile {
       }
 
       const formData = transOEMConfigToForm(config, void 0, void 0, true);
-      await this.openConfigModal(formData, false);
+      await this.openConfigModal(formData, false, "update");
     } catch (error) {
       this.tryCatchError(toString(error));
     }

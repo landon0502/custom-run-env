@@ -1,5 +1,12 @@
 const { shopTypes } = require("../utils/constant.js");
-const { isEmpty, cloneDeep, isPlainObject, merge, omit } = require("lodash");
+const {
+  isEmpty,
+  cloneDeep,
+  isPlainObject,
+  merge,
+  omit,
+  isUndefined,
+} = require("lodash");
 const { getHxConfig } = require("../utils/editor.js");
 const { expectObject, chineseToHex } = require("../utils/common.js");
 const { genEventKey } = require("./context.js");
@@ -175,13 +182,17 @@ async function openAppManifestModal(data) {
       type: "input",
       name: "privacyAgreement",
       label: "隐私协议",
-      value: "https://091801.zhonglunnet.com/clause/index.html?title=隐私政策",
+      value: isUndefined(data.privacyAgreement)
+        ? "https://091801.zhonglunnet.com/clause/index.html?title=隐私政策"
+        : "",
     },
     {
       type: "input",
       name: "userAgreement",
       label: "用户协议",
-      value: "https://091801.zhonglunnet.com/clause/index.html",
+      value: isUndefined(data.userAgreement)
+        ? "https://091801.zhonglunnet.com/clause/index.html"
+        : "",
     },
     {
       type: "fileSelectInput",
@@ -604,8 +615,9 @@ async function showFormDialog(data) {
           type: "input",
           name: "payAgreement",
           label: "支付协议",
-          value:
-            "https://091801.zhonglunnet.com/clause/index.html?title=支付开通协议",
+          value: isUndefined(data.payAgreement)
+            ? "https://091801.zhonglunnet.com/clause/index.html?title=支付开通协议"
+            : "",
         },
         {
           type: "fileSelectInput",

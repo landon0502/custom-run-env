@@ -1,6 +1,6 @@
 const { fillPath, parsePathFileName } = require("../utils/file");
 const { getHxConfig } = require("../utils/editor.js");
-const { isEmpty, toString } = require("lodash");
+const { isEmpty, toString, isUndefined } = require("lodash");
 const cheerio = require("cheerio");
 /**
  * 生成事件key
@@ -80,8 +80,16 @@ function getOEM(config) {
  */
 function getManifest(config) {
   const manifest = config.manifest ?? {};
+
   // 组装隐私协议
   const getPrivacy = () => {
+    if (!manifest.userAgreement && !manifest.privacyAgreement) {
+      return {
+        prompt: "none",
+        template: {},
+      };
+    }
+
     const message = `请你务必审慎阅读、充分理解“服务协议和隐私政策”各条款，包括但不限于：为了更好的向你提供服务，我们需要收集你的设备标识、操作日志等信息用于分析、优化应用性能。<br/>　　你可阅读${
       manifest.userAgreement
         ? `<a href="${manifest.userAgreement}">《用户协议》</a>和`
@@ -118,7 +126,19 @@ function getManifest(config) {
       },
     };
   };
-
+  let maps = {};
+  if (manifest.amapioskey) {
+    if (isUndefined(maps.amap)) {
+      maps.amap = {};
+    }
+    maps.amap.appkey_ios = manifest.amapioskey;
+  }
+  if (manifest.amapandroidkey) {
+    if (isUndefined(maps.amap)) {
+      maps.amap = {};
+    }
+    maps.amap.appkey_android = manifest.amapandroidkey;
+  }
   return {
     name: manifest.name || config.appName,
     appid: config.appid,
@@ -144,12 +164,7 @@ function getManifest(config) {
             !!manifest.userAgreement || !!manifest.privacyAgreement,
         },
         sdkConfigs: {
-          maps: {
-            amap: {
-              appkey_ios: manifest.amapioskey,
-              appkey_android: manifest.amapandroidkey,
-            },
-          },
+          maps: maps,
         },
       },
       nativePlugins: manifest.nativePlugins,
