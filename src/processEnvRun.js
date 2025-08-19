@@ -44,6 +44,7 @@ const {
   transOEMConfigToForm,
 } = require("./modal/context.js");
 const { pinyin } = require("pinyin");
+const path = require("path");
 // const { exec } = require("./utils/command.js");
 
 const hx = getPlatForm();
@@ -550,7 +551,7 @@ class ProcessEnvRun extends WatchFile {
     } else if (isNumber(dpi)) {
       // 缓存已处理的图片；
       if (this.cache[dpi]) return this.cache[dpi];
-      let path = handleLogoImage(dpi);
+      let path = await handleLogoImage(dpi);
       this.cache[dpi] = path;
       return path;
     }
@@ -570,6 +571,7 @@ class ProcessEnvRun extends WatchFile {
       let isExist = await fsExist(imgFillPath);
       if (isExist) {
         let copyToPath = fillPath(this.projectRootDir, img, true);
+        await ensureDirectoryExists(path.dirname(copyToPath));
         await copy(imgFillPath, copyToPath, true);
       }
     }
@@ -699,7 +701,7 @@ class ProcessEnvRun extends WatchFile {
 
     // 一个manifest配置和一个config配置
     const handleOemAssets = async (oemConfig) => {
-      let projectAssetsImagePathPrefix = "/static/images/login/";
+      let projectAssetsImagePathPrefix = "/static/images/oem/";
 
       let isAssetsFile = (path) =>
         typeof path === "string" &&
@@ -746,11 +748,15 @@ class ProcessEnvRun extends WatchFile {
         }
       }
     };
-    const handleManifestAssets = async (manifestConfig) => {
+    const handleManifestAssets = async (manifestConfig, oem) => {
       const distribute = manifestConfig?.["app-plus"]?.distribute ?? {};
       if (distribute.icons) {
-        let filename = "app-icon.png";
-        distribute.icons = await handleMoveAssets(distribute.icons, filename);
+        // 这里使用oem中的logo
+        distribute.icons = fillPath(
+          getHxConfig("oemAssetsImageDir"),
+          parsePathFileName(oem.logo).filename,
+          true
+        );
       }
       if (distribute?.splashscreen?.ios?.storyboard) {
         let filename = "storyboard.zip";
@@ -784,7 +790,7 @@ class ProcessEnvRun extends WatchFile {
     };
     await handleBuildConfig();
     await handleOemAssets(oem);
-    await handleManifestAssets(manifest);
+    await handleManifestAssets(manifest, oem);
   }
 
   async addOem() {

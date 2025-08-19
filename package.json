@@ -3,7 +3,7 @@
   "name": "customrunenv",
   "description": "自定义运行环境",
   "displayName": "Custom Run Env",
-  "version": "0.12.42",
+  "version": "0.12.43",
   "publisher": "wanghuan",
   "engines": {
     "HBuilderX": "^2.7.0",
@@ -133,7 +133,8 @@
     "json-format": "^1.0.1",
     "json5": "^2.2.3",
     "lodash": "^4.17.21",
-    "pinyin": "^4.0.0"
+    "pinyin": "^4.0.0",
+    "sharp": "^0.34.3"
   },
   "devDependencies": {
     "esbuild": "^0.25.1"

@@ -3,7 +3,6 @@ const fs = require("fs");
 const JSON5 = require("json5");
 const { isUndef } = require("./is");
 const { toString } = require("lodash");
-const readFile = fs.promises.readFile;
 /**
  * 补全路径
  * @param {*} dir
@@ -55,63 +54,34 @@ async function fsRemove(path) {
 }
 
 async function checkCaseSensitive(filePath) {
+  const { dir, fileName } = parsePathFileName(filePath);
   try {
-    const realPath = await fs.promises.realpath(filePath);
-    return path.resolve(filePath) === realPath;
+    const files = fs.readdirSync(dir);
+    return files.some((f) => f === fileName);
   } catch (err) {
     return false;
   }
 }
 
-function copy(sourcePath, destinationPath, overwrite) {
-  return new Promise(async (resolve, reject) => {
-    const source = fs.createReadStream(sourcePath);
-    let isExist = await fsExist(destinationPath);
-    let isCaseSensitive = await checkCaseSensitive(destinationPath);
+async function copy(sourcePath = "", destinationPath = "", overwrite) {
+  try {
+    let srcPath = sourcePath;
+    let destPath = destinationPath;
+    await fs.promises.copyFile(srcPath, destPath);
+    // 最后去改名
+    let isExist = await fsExist(destPath);
+    let isCaseSensitive = checkCaseSensitive(destPath);
     if (overwrite && isExist && !isCaseSensitive) {
-      await fs.promises.rm(destinationPath);
+      let destFilename = parsePathFileName(destPath).filename;
+      let realpath = await fs.promises.realpath(destPath);
+      let realDestFilename = parsePathFileName(realpath).filename;
+      let reDestPath = realpath.replace(realDestFilename, destFilename);
+      await fs.promises.rename(realpath, reDestPath);
     }
-    const destination = fs.createWriteStream(destinationPath);
-    source.on("error", (err) => {
-      console.error("读取文件时发生错误:", err);
-      reject(err);
-    });
-    destination.on("error", (err) => {
-      console.error("写入文件时发生错误:", err);
-      reject(err);
-    });
-    destination.on("finish", () => {
-      resolve();
-    });
-    source.pipe(destination);
-  });
-}
-
-function copyFileWithCaseCheck(source, target) {
-  return new Promise((resolve, reject) => {
-    // 检查源文件是否存在（精确匹配）
-    fs.readdir(path.dirname(source), (err, files) => {
-      if (err) return reject(err);
-
-      const sourceBase = path.basename(source);
-      const exactMatch = files.includes(sourceBase);
-
-      if (!exactMatch) {
-        return reject(
-          new Error(`Source file not found with exact case: ${source}`)
-        );
-      }
-      // 执行复制
-      const readStream = fs.createReadStream(source);
-      const writeStream = fs.createWriteStream(target);
-
-      readStream.on("error", reject);
-      writeStream.on("error", reject);
-      writeStream.on("finish", resolve);
-
-      readStream.pipe(writeStream);
-    });
-  });
+  } catch (error) {
+    console.log("这里错误了", error);
+    throw error;
+  }
 }
 
 async function writeFile(path, content) {
@@ -120,7 +90,7 @@ async function writeFile(path, content) {
 }
 
 async function readJsonValue(jsonPath) {
-  let res = await readFile(jsonPath);
+  let res = await fs.promises.readFile(jsonPath);
   let jsonValue = JSON5.parse(toString(res));
   return jsonValue;
 }
@@ -161,16 +131,17 @@ async function getDirectories(srcpath) {
 /**
  * 解析file path
  */
-function parsePathFileName(path) {
-  if (!path)
+function parsePathFileName(src) {
+  if (!src)
     return {
       filename: "",
       ext: "",
       path: "",
     };
-  let filename = path.match(/[^\/\\]+$/)[0]; // 使用正则表达式匹配最后的文件名部分
-  let ext = getFileExt(filename);
-  return { filename, ext, path };
+  let filename = path.basename(src);
+  let dir = path.dirname(src);
+  let ext = path.extname(src);
+  return { filename, ext, path, dir };
 }
 
 function isParentPath(parentPath, childPath) {
@@ -187,12 +158,10 @@ module.exports = {
   fsExist,
   writeFile,
   readJsonValue,
-  readFile,
   getFileExt,
   ensureDirectoryExists,
   getDirectories,
   parsePathFileName,
   fsExistSync,
   isParentPath,
-  copyFileWithCaseCheck,
 };

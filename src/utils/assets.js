@@ -33,16 +33,21 @@ const { Jimp } = require("jimp");
  * 处理图片分辨率1
  */
 async function resizeResolution(options) {
-  let { dpi, inputPath, outputPath } = options;
-  const image = await Jimp.read(inputPath);
-  image.resize({
-    w: dpi,
-    h: dpi,
-  });
-  // image.quality(formatOptions.compression);
+  try {
+    let { dpi, inputPath, outputPath } = options;
+    const image = await Jimp.read(inputPath);
+    image.resize({
+      w: dpi,
+      h: dpi,
+    });
+    // image.quality(formatOptions.compression);
 
-  await image.write(outputPath); // resize and save
-  return outputPath;
+    await image.write(outputPath); // resize and save
+    return outputPath;
+  } catch (error) {
+    console.error("jimp 错误", error);
+    return Promise.reject(error);
+  }
 }
 
 module.exports = {
