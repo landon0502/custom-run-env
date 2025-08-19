@@ -54,14 +54,37 @@ async function fsRemove(path) {
   });
 }
 
-async function copy(source, destination, overwrite) {
-  const srcPath = path.resolve(source);
-  const destPath = path.resolve(destination);
-  let isExist = await fsExist(destination);
-  await fs.promises.copyFile(srcPath, destPath);
-  if (overwrite && isExist && srcPath !== destPath) {
-    await fs.promises.rename(srcPath, destPath);
+async function checkCaseSensitive(filePath) {
+  try {
+    const realPath = await fs.promises.realpath(filePath);
+    return path.resolve(filePath) === realPath;
+  } catch (err) {
+    return false;
   }
+}
+
+function copy(sourcePath, destinationPath, overwrite) {
+  return new Promise(async (resolve, reject) => {
+    const source = fs.createReadStream(sourcePath);
+    let isExist = await fsExist(destinationPath);
+    let isCaseSensitive = await checkCaseSensitive(destinationPath);
+    if (overwrite && isExist && !isCaseSensitive) {
+      await fs.promises.rm(destinationPath);
+    }
+    const destination = fs.createWriteStream(destinationPath);
+    source.on("error", (err) => {
+      console.error("读取文件时发生错误:", err);
+      reject(err);
+    });
+    destination.on("error", (err) => {
+      console.error("写入文件时发生错误:", err);
+      reject(err);
+    });
+    destination.on("finish", () => {
+      resolve();
+    });
+    source.pipe(destination);
+  });
 }
 
 function copyFileWithCaseCheck(source, target) {
