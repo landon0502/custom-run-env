@@ -156,7 +156,11 @@ class FormDialog {
           const { allWidget, changedWidget } = config;
           if (isObject(changedWidget) && isEvent(changedWidget.name)) {
             let event = getEventName(changedWidget.name);
-            await buttonEvents?.[event]?.call?.(this, field, changedWidget);
+            function updateForm(ui){
+              this.updateForm(ui)
+            }
+            
+            await buttonEvents?.[event]?.call?.(this, field, changedWidget, updateForm.bind(this));
           }
         }
         onChanged(field, config);
