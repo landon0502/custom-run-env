@@ -201,7 +201,8 @@ class ProcessEnvRun extends WatchFile {
       }
     );
     let oemManifestNativePlugins = manifest["app-plus"]?.nativePlugins ?? {};
-    let oemPlugin = {};
+	let curIosBundleName = iosBundle
+	let curAndroidPackageName = androidPackageName
     // 重写包名
     let nativePlugins = manifestJson["app-plus"]?.nativePlugins;
     if (isPlainObject(nativePlugins)) {
@@ -209,19 +210,24 @@ class ProcessEnvRun extends WatchFile {
         let plugin_info = config.__plugin_info__;
         let oem_plugin_info =
           oemManifestNativePlugins[key]?.__plugin_info__ ?? {};
-        oemPlugin = oem_plugin_info;
         // 离线包名好像不需要这个配置？？
         if (isPlainObject(plugin_info)) {
           if (
             plugin_info.platforms?.toLocaleLowerCase?.()?.includes?.("android")
           ) {
             // 如何oem的manifest中存在包名，则不使用打包包名，否则使用打包名
-            plugin_info.android_package_name =
-              oem_plugin_info.android_package_name ?? androidPackageName;
+			let name = oem_plugin_info.android_package_name ?? androidPackageName
+            plugin_info.android_package_name = name;
+			if(curAndroidPackageName !== name && name){
+				curAndroidPackageName = name
+			}
           }
           if (plugin_info.platforms?.toLocaleLowerCase?.()?.includes?.("ios")) {
-            plugin_info.ios_bundle_id =
-              oem_plugin_info.ios_bundle_id ?? iosBundle;
+			let name = oem_plugin_info.ios_bundle_id ?? iosBundle
+            plugin_info.ios_bundle_id = name;
+			  if(curIosBundleName !== name && name){
+			  	curIosBundleName = name
+			  }
           }
         }
       });
@@ -246,10 +252,9 @@ class ProcessEnvRun extends WatchFile {
     }
     logger.info(
       [
-        "android package name:" + oemPlugin.android_package_name ??
-          androidPackageName ??
+        "android package name:" + curAndroidPackageName ??
           "无",
-        "ios package name:" + oemPlugin.ios_bundle_id ?? iosBundle ?? "无",
+        "ios package name:" + curIosBundleName ?? "无",
       ].join(",")
     );
   }
