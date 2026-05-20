@@ -153,10 +153,13 @@ async function openShopTypeSelectModal(data, isOem) {
 
   const form = new FormDialog(ui);
   let res = await form.open(data);
-  let config = omit(
-    res,
-    Object.keys(res).filter((key) => key.startsWith(prefix))
-  );
+  let config = {
+    ...omit(
+        res,
+        Object.keys(res).filter((key) => key.startsWith(prefix))
+      )
+  };
+  
 
   config.shopTypes?.forEach((type) => {
     let key = `${prefix}${split}${type.id}`;
@@ -361,7 +364,7 @@ async function openAppManifestModal(data) {
 
   let res = await form.open(data, {
     buttonEvents: {
-      async onSelectNativePlugins() {
+      async onSelectNativePlugins(field, changedWidget, updateForm) {
         let newNativePluginSeleted = await openNativePluginConfig(data);
         Object.entries(newNativePluginSeleted.nativePlugins).forEach(
           ([key, item]) => {
@@ -378,7 +381,7 @@ async function openAppManifestModal(data) {
           ...formItems,
           ...handleNativePluginFormItems(newNativePluginSeleted.nativePlugins),
         ];
-        this.updateForm(form.setFormValue(data, newUI));
+        updateForm(form.setFormValue(data, newUI));
       },
     },
   });
@@ -746,13 +749,16 @@ async function showFormDialog(data) {
         }
       },
       buttonEvents: {
-        async onSetShopType() {
+        async onSetShopType(field, changedWidget, updateForm) {
           let shopTypesConfig = await openShopTypeSelectModal(
             data,
             isOem === "true"
           );
           Object.assign(data, shopTypesConfig);
-          this.updateForm(form.setFormValue(data));
+          
+          let ui = cloneDeep(form.setFormValue(data))
+          console.log('===>',updateForm, ui)
+          updateForm(form.setFormValue(data));
         },
         async onSetManifest() {
           if (!manifest.name) {
@@ -776,7 +782,7 @@ async function showFormDialog(data) {
     }
     return { ...data, ...formData };
   } catch (error) {
-    return Promise.reject(error === -1 ? "已取消" : error);
+    return Promise.reject(error === -1 ? void 0 : error);
   }
 }
 

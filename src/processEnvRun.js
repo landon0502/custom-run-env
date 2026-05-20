@@ -959,8 +959,10 @@ class ProcessEnvRun extends WatchFile {
 
   tryCatchError(errorMsg) {
     this.destory();
-    hx.window.showErrorMessage(errorMsg);
-    logger.error(errorMsg);
+    if(errorMsg){
+      hx.window.showErrorMessage(errorMsg);
+      logger.error(errorMsg);
+    }
   }
 }
 
